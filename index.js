@@ -7,7 +7,7 @@ const app = express();
 const port = process.env.PORT || 5000;
 
 const corsOptions = {
-  origin: 'https://neonnet.netlify.app/',
+  origin: 'http://localhost:5173',
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true, // Allow credentials
@@ -20,11 +20,12 @@ app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
 const uri = "mongodb+srv://sahareior:Bafhu6MH1TcEmlPV@cluster0.s4ykc77.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+const db = client.db('Neon_net');
+const blogPosts = db.collection('Blog_Posts');
 
 async function generateSitemap() {
   try {
-    const db = client.db('Neon_net');
-    const blogPosts = db.collection('Blog_Posts');
+   
     const posts = await blogPosts.find().toArray();
 
     const slugify = (text) => {
@@ -37,7 +38,7 @@ async function generateSitemap() {
         .replace(/\-\-+/g, '-');
     };
 
-    const sitemap = new SitemapStream({ hostname: 'https://neonnet.netlify.app' });
+    const sitemap = new SitemapStream({ hostname: 'http://localhost:5000' });
 
     sitemap.write({ url: '/', lastmod: new Date() });
     sitemap.write({ url: '/blogs', lastmod: new Date() });
