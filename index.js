@@ -7,7 +7,7 @@ const app = express();
 const port = process.env.PORT || 5000;
 
 const corsOptions = {
-  origin: 'http://localhost:5173',
+  origin: 'https://neonnet.netlify.app',
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true, // Allow credentials
@@ -38,7 +38,7 @@ async function generateSitemap() {
         .replace(/\-\-+/g, '-');
     };
 
-    const sitemap = new SitemapStream({ hostname: 'http://localhost:5000' });
+    const sitemap = new SitemapStream({ hostname: 'https://neonnet.netlify.app' });
 
     sitemap.write({ url: '/', lastmod: new Date() });
     sitemap.write({ url: '/blogs', lastmod: new Date() });
