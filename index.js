@@ -1,15 +1,13 @@
 const express = require('express');
 const cors = require('cors');
 const { MongoClient } = require('mongodb');
-const fs = require('fs');
-const path = require('path');
 const { SitemapStream, streamToPromise } = require('sitemap');
 
 const app = express();
 const port = process.env.PORT || 5000;
 
 const corsOptions = {
-  origin: 'http://localhost:5173',
+  origin: 'https://neonnet.netlify.app/',
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true, // Allow credentials
@@ -21,7 +19,6 @@ app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
 const uri = "mongodb+srv://sahareior:Bafhu6MH1TcEmlPV@cluster0.s4ykc77.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
-// const uri = "mongodb://localhost:27017"
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 
 async function generateSitemap() {
@@ -40,7 +37,7 @@ async function generateSitemap() {
         .replace(/\-\-+/g, '-');
     };
 
-    const sitemap = new SitemapStream({ hostname: 'https://yourwebsite.com' });
+    const sitemap = new SitemapStream({ hostname: 'https://neonnet.netlify.app' });
 
     sitemap.write({ url: '/', lastmod: new Date() });
     sitemap.write({ url: '/blogs', lastmod: new Date() });
@@ -53,14 +50,7 @@ async function generateSitemap() {
 
     const sitemapXml = await streamToPromise(sitemap).then(sm => sm.toString());
 
-    const publicDir = path.join(__dirname, 'public');
-
-    if (!fs.existsSync(publicDir)) {
-      fs.mkdirSync(publicDir, { recursive: true });
-    }
-
-    fs.writeFileSync(path.join(publicDir, 'sitemap.xml'), sitemapXml);
-    console.log('Sitemap successfully generated at:', path.join(publicDir, 'sitemap.xml'));
+    return sitemapXml;
   } catch (err) {
     console.error('Error generating sitemap:', err);
     throw new Error('Error generating sitemap');
@@ -71,13 +61,12 @@ async function startServer() {
   try {
     await client.connect();
     console.log("Connected to MongoDB");
-    const db = client.db('Neon_net');
-    const blogPosts = db.collection('Blog_Posts');
 
     app.post('/posts', async (req, res) => {
       const data = req.body;
       try {
         const result = await blogPosts.insertOne(data);
+        // Generate sitemap after inserting a post
         await generateSitemap();
         res.send(result);
       } catch (err) {
@@ -93,6 +82,18 @@ async function startServer() {
       } catch (err) {
         console.error('Error fetching blog posts:', err);
         res.status(500).send('Error fetching blog posts.');
+      }
+    });
+
+    // Serve sitemap dynamically
+    app.get('/sitemap.xml', async (req, res) => {
+      try {
+        const sitemapXml = await generateSitemap();
+        res.header('Content-Type', 'application/xml');
+        res.send(sitemapXml);
+      } catch (err) {
+        console.error('Error generating sitemap:', err);
+        res.status(500).send('Error generating sitemap.');
       }
     });
 
