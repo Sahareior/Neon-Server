@@ -12,6 +12,7 @@ const corsOptions = {
   origin: 'http://localhost:5173',
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true, // Allow credentials
 };
 
 app.use(cors(corsOptions));
@@ -67,7 +68,7 @@ async function generateSitemap() {
 
 async function startServer() {
   try {
-     client.connect();
+    await client.connect();
     console.log("Connected to MongoDB");
     const db = client.db('Neon_net');
     const blogPosts = db.collection('Blog_Posts');
@@ -104,6 +105,7 @@ startServer().catch(console.dir);
 app.get('/', (req, res) => {
   res.send("Hello World");
 });
+
 app.listen(port, () => {
   console.log(`Server listening on port ${port}`);
 });
