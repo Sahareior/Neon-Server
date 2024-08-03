@@ -53,13 +53,14 @@ async function generateSitemap() {
 
     const sitemapXml = await streamToPromise(sitemap).then(sm => sm.toString());
 
-    const publicDir = path.join(__dirname, '../public');
+    const publicDir = path.join(__dirname, 'public');
 
     if (!fs.existsSync(publicDir)) {
       fs.mkdirSync(publicDir, { recursive: true });
     }
 
     fs.writeFileSync(path.join(publicDir, 'sitemap.xml'), sitemapXml);
+    console.log('Sitemap successfully generated at:', path.join(publicDir, 'sitemap.xml'));
   } catch (err) {
     console.error('Error generating sitemap:', err);
     throw new Error('Error generating sitemap');
