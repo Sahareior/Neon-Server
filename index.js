@@ -44,8 +44,8 @@ async function generateSitemap() {
     sitemap.write({ url: '/blogs', lastmod: "2024-08-05T13:47:49.415Z" });
 
     posts.forEach(post => {
-      const lastmod = new Date(post.lastmod).toString() !== 'Invalid Date' ? new Date(post.lastmod) : new Date();
-      sitemap.write({ url: `/blogs/${slugify(post.title)}`, lastmod: lastmod.toISOString() });
+      
+      sitemap.write({ url: `/blogs/${slugify(post.title)}`, lastmod: post.lastmod});
     });
 
     sitemap.end();
