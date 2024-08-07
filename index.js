@@ -88,6 +88,26 @@ async function startServer() {
       }
     });
 
+    app.get('/blogs/:id', async (req, res) => {
+      const slug = req.params.id.trim();
+  
+      try {
+
+        const titleRegex = new RegExp(`^${slug.replace(/-/g, ' ').replace(/\b\w/g, char => char.toUpperCase())}$`, 'i');
+        const data = await blogPosts.findOne({ title: titleRegex });
+     
+        if (data) {
+          res.json(data);
+        } else {
+          res.status(404).send('Blog post not found');
+        }
+      } catch (error) {
+        console.error('Error fetching blog data:', error);
+        res.status(500).send('Error fetching blog data');
+      }
+    });
+    
+    
     // Serve sitemap dynamically
     app.get('/sitemap.xml', async (req, res) => {
       try {
