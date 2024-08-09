@@ -7,7 +7,7 @@ const app = express();
 const port = process.env.PORT || 5000;
 
 const corsOptions = {
-  origin: 'https://neonnet.netlify.app/',
+  origin: 'https://neonnet.netlify.app',
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true, // Allow credentials
@@ -18,8 +18,8 @@ app.use(cors(corsOptions));
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
-const uri ="mongodb://localhost:27017"
-// const uri = "mongodb+srv://sahareior:Bafhu6MH1TcEmlPV@cluster0.s4ykc77.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
+// const uri ="mongodb://localhost:27017"
+const uri = "mongodb+srv://sahareior:Bafhu6MH1TcEmlPV@cluster0.s4ykc77.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 const db = client.db('Neon_net');
 const blogPosts = db.collection('Blog_Posts');
@@ -39,7 +39,7 @@ async function generateSitemap() {
         .replace(/\-\-+/g, '-');
     };
 
-    const sitemap = new SitemapStream({ hostname: 'https://neonnet.netlify.app/' });
+    const sitemap = new SitemapStream({ hostname: 'https://neonnet.netlify.app' });
 
     sitemap.write({ url: '/', lastmod: "2024-08-05T13:47:49.415Z" });
     sitemap.write({ url: '/blogs', lastmod: "2024-08-05T13:47:49.415Z" });
